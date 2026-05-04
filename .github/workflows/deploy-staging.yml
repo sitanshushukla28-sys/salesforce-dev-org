@@ -1,0 +1,60 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches:
+      - staging
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli --prefer-offline
+
+      - name: Install sfdx-git-delta
+        run: sf plugins install sfdx-git-delta --no-prompt
+
+      - name: Authenticate to Staging Org
+        run: |
+          echo "${{ secrets.SFDX_AUTH_URL_STAGING }}" > staging_auth.txt
+          sf org login sfdx-url --sfdx-url-file staging_auth.txt --set-default --alias staging-org
+          rm staging_auth.txt
+
+      - name: Generate delta package
+        run: |
+          mkdir -p delta
+          sf sgd source delta \
+            --from ${{ github.event.before }} \
+            --to ${{ github.sha }} \
+            --repo . \
+            --output delta \
+            --generate-delta
+
+      - name: Deploy delta to Staging
+        run: |
+          if [ -s delta/package/package.xml ]; then
+            sf project deploy start \
+              --manifest delta/package/package.xml \
+              --target-org staging-org \
+              --test-level RunLocalTests \
+              --wait 30
+          else
+            echo "No metadata changes to deploy."
+          fi
+
+      - name: Deploy destructive changes to Staging
+        run: |
+          if [ -s delta/destructiveChanges/destructiveChanges.xml ]; then
+            sf project deploy start \
+              --manifest delta/destructiveChanges/destructiveChanges.xml \
+              --target-org staging-org \
+              --test-level NoTestRun \
+              --wait 30
+          fi

@@ -1,0 +1,60 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli --prefer-offline
+
+      - name: Install sfdx-git-delta
+        run: sf plugins install sfdx-git-delta --no-prompt
+
+      - name: Authenticate to Production Org
+        run: |
+          echo "${{ secrets.SFDX_AUTH_URL_PROD }}" > prod_auth.txt
+          sf org login sfdx-url --sfdx-url-file prod_auth.txt --set-default --alias prod-org
+          rm prod_auth.txt
+
+      - name: Generate delta package
+        run: |
+          mkdir -p delta
+          sf sgd source delta \
+            --from ${{ github.event.before }} \
+            --to ${{ github.sha }} \
+            --repo . \
+            --output delta \
+            --generate-delta
+
+      - name: Deploy delta to Production
+        run: |
+          if [ -s delta/package/package.xml ]; then
+            sf project deploy start \
+              --manifest delta/package/package.xml \
+              --target-org prod-org \
+              --test-level RunLocalTests \
+              --wait 60
+          else
+            echo "No metadata changes to deploy."
+          fi
+
+      - name: Deploy destructive changes to Production
+        run: |
+          if [ -s delta/destructiveChanges/destructiveChanges.xml ]; then
+            sf project deploy start \
+              --manifest delta/destructiveChanges/destructiveChanges.xml \
+              --target-org prod-org \
+              --test-level NoTestRun \
+              --wait 60
+          fi

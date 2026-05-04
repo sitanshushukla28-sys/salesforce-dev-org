@@ -1,0 +1,60 @@
+name: Deploy to QA
+
+on:
+  push:
+    branches:
+      - qa
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Salesforce CLI
+        run: npm install -g @salesforce/cli --prefer-offline
+
+      - name: Install sfdx-git-delta
+        run: sf plugins install sfdx-git-delta --no-prompt
+
+      - name: Authenticate to QA Org
+        run: |
+          echo "${{ secrets.SFDX_AUTH_URL_QA }}" > qa_auth.txt
+          sf org login sfdx-url --sfdx-url-file qa_auth.txt --set-default --alias qa-org
+          rm qa_auth.txt
+
+      - name: Generate delta package
+        run: |
+          mkdir -p delta
+          sf sgd source delta \
+            --from ${{ github.event.before }} \
+            --to ${{ github.sha }} \
+            --repo . \
+            --output delta \
+            --generate-delta
+
+      - name: Deploy delta to QA
+        run: |
+          if [ -s delta/package/package.xml ]; then
+            sf project deploy start \
+              --manifest delta/package/package.xml \
+              --target-org qa-org \
+              --test-level RunLocalTests \
+              --wait 30
+          else
+            echo "No metadata changes to deploy."
+          fi
+
+      - name: Deploy destructive changes to QA
+        run: |
+          if [ -s delta/destructiveChanges/destructiveChanges.xml ]; then
+            sf project deploy start \
+              --manifest delta/destructiveChanges/destructiveChanges.xml \
+              --target-org qa-org \
+              --test-level NoTestRun \
+              --wait 30
+          fi
