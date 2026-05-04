@@ -1,0 +1,28 @@
+<apex:component controller="ActiveAccounts">
+    <apex:form >
+     <div class="column">
+       <apex:pageblock id="account" title="Account Details(Standard Object)" >
+            <apex:pageblockTable value="{!acc}" var="a">
+                <apex:column style="text-align: center; border:1px solid black;" value="{!a.Id}"/>
+                <apex:column style="text-align: center; border:1px solid black;" headerValue="Account Name" >
+                    <apex:outputLink value="{!URLFOR($Action.Account.View, a.id)}"> 
+                        {!a.name} 
+                    </apex:outputLink>
+                </apex:column>
+                <apex:column style="text-align: center; border:1px solid black;" value="{!a.Active__c}"/>
+            </apex:pageblockTable>
+         </apex:pageblock><br/><br/>
+       <apex:pageblock id="contact" title="Account Details(Standard Object)" >
+            <apex:pageblockTable value="{!con}" var="c">
+                <apex:column style="text-align: center; border:1px solid black;" value="{!c.Id}"/>
+                <apex:column style="text-align: center; border:1px solid black;" headerValue="Contact Name" >
+                    <apex:outputLink value="{!URLFOR($Action.Contact.View, c.id)}"> 
+                        {!c.name} 
+                    </apex:outputLink>
+                </apex:column>
+                <apex:column style="text-align: center; border:1px solid black;" value="{!c.Title}"/>
+            </apex:pageblockTable>
+        </apex:pageblock>
+     </div>
+    </apex:form>
+</apex:component>

@@ -1,0 +1,41 @@
+<template>
+    <lightning-card title="Case Files" icon-name="standard:file">
+        <template if:true={hasFiles}>
+            <template for:each={files} for:item="file">
+                <div key={file.id} class="slds-box slds-m-around_small slds-p-around_small">
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <strong>{file.title}</strong> ({file.type})
+                        </div>
+                        <div class="slds-col slds-size_1-of-4">
+                            <lightning-formatted-date-time
+                                value={file.date}
+                                year="numeric"
+                                month="short"
+                                day="2-digit">
+                            </lightning-formatted-date-time>
+                        </div>
+                        <div class="slds-col slds-size_1-of-4">
+                            <lightning-button
+                                label="Preview"
+                                variant="brand-outline"
+                                data-versionid={file.versionId}
+                                onclick={handlePreview}>
+                            </lightning-button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </template>
+
+        <template if:false={hasFiles}>
+            <p class="slds-p-around_medium">No files found.</p>
+        </template>
+
+        <template if:true={error}>
+            <p class="slds-text-color_error slds-p-around_medium">
+                {error.body.message}
+            </p>
+        </template>
+    </lightning-card>
+</template>

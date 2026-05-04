@@ -1,0 +1,13 @@
+.THIS {
+    background-color : Yellow !important;
+    font-size:30px;
+}
+.THIS.red {
+    color:red;
+}
+.THIS.green {
+    color: green;
+}
+.THIS.blue {
+    color: blue;
+}

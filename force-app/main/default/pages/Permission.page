@@ -1,0 +1,72 @@
+<apex:page Controller="CopyPermissions" showHeader="false">
+
+ <div align="right">
+ </div>
+<br/>
+<apex:form >
+<apex:pageBlock title="Assign Permissions">
+<apex:pageBlockSection columns="1" >
+<apex:pageBlockSectionitem >
+Select the permissions to be assigned
+<apex:selectList value="{!selectpermissions}" multiselect="true" size="5">
+            <apex:selectOptions value="{!allpermissions}"/>
+        </apex:selectList>
+</apex:pageBlockSectionitem>
+<apex:pageBlockSectionItem >
+Copy the usernames of the users
+<apex:inputtextarea value="{!emaillist}"/>
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionitem >
+<apex:commandButton action="{!Assign}" value="Assign Permissions"></apex:commandButton>
+<apex:commandButton action="{!Log}" value="View Log" disabled="{!If(allstring != null, false, true)}"></apex:commandButton>
+</apex:pageBlockSectionitem>
+</apex:pageBlockSection>
+</apex:pageBlock>
+<br></br>
+<apex:pageBlock title="Assign Groups">
+<apex:pageBlockSection columns="1" >
+<apex:pageBlockSectionitem >
+Enter the groups to be assigned
+<apex:inputtextarea value="{!emaillistgr}"/>
+</apex:pageBlockSectionitem>
+<apex:pageBlockSectionItem >
+Copy the usernames of the users
+<apex:inputtextarea value="{!emaillistg}"/>
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionitem >
+<apex:commandButton action="{!Assigngroups}" value="Assign Groups"></apex:commandButton>
+</apex:pageBlockSectionitem>
+</apex:pageBlockSection>
+</apex:pageBlock>
+<br/>
+<apex:pageBlock title="Manage Package Licenses">
+<apex:pageBlockSection columns="1" >
+<apex:pageBlockSectionitem >
+Select the License to be assigned
+<apex:selectList value="{!selectlicenses}" multiselect="true" size="5">
+            <apex:selectOptions value="{!allLicenses}"/>
+        </apex:selectList>
+</apex:pageBlockSectionitem>
+<apex:pageBlockSectionItem >
+Copy the usernames of the users
+<apex:inputtextarea value="{!emaillistl}"/>
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionitem >
+<apex:commandButton action="{!AssignLicenses}" value="Assign Licenses"></apex:commandButton>
+</apex:pageBlockSectionitem>
+</apex:pageBlockSection>
+</apex:pageBlock>
+<br/>
+<apex:pageBlock title="Copy Permissions">
+<apex:pageBlockSection columns="1">
+<apex:pageBlockSectionItem >
+Enter the 15 digit Salesforce id of the user to copy permissions from:
+<apex:inputText value="{!UserId}" />
+</apex:pageBlockSectionItem>
+<apex:pageBlockSectionitem >
+<apex:commandButton action="{!Copy}" value="Copy Permissions"></apex:commandButton>
+</apex:pageBlockSectionitem>
+</apex:pageBlockSection>
+</apex:pageBlock>
+</apex:form>
+</apex:page>

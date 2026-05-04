@@ -1,0 +1,3 @@
+<aura:component implements="force:lightningQuickAction" access="global" >
+    This is lightning quick action
+</aura:component>

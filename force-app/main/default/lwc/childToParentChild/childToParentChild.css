@@ -1,0 +1,11 @@
+.container {
+    padding: 20px; /* Add padding around the container */
+}
+
+.input {
+    margin-bottom: 10px; /* Add margin at the bottom of the input */
+}
+
+.button {
+    margin-top: 10px; /* Add margin at the top of the button */
+}

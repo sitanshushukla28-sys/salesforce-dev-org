@@ -1,0 +1,12 @@
+<aura:component implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId" access="global" >
+    <p class="para"> This is Blue</p>
+    <div><p class = "para1"> This is White</p></div>
+    <div>
+        <div>
+            <p class = "para2"> This is Red </p>
+        </div>
+    </div> 
+    <button>HTML Button</button>
+    <lightning:button variant = "brand" label="Lightning Button" />
+    <button class="slds-button slds-button_brand">Brand Button</button>
+</aura:component>
